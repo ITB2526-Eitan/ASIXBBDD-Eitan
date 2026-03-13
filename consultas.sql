@@ -20,4 +20,8 @@ SELECT COUNT(nom) AS personas FROM dades_ponent WHERE nom = "anna" AND cognom = 
 
 SELECT nom,cognom,empresa FROM dades_ponent WHERE nom = "anna" AND cognom = "rovira";
 
-SELECT nom,cognom,empresa FROM dades_ponent WHERE nom = "anna" or nom = "rovira";
+SELECT nom,cognom,empresa FROM dades_ponent WHERE nom = "anna" or cognom = "rovira";
+
+SELECT COUNT(*) nom FROM dades_ponent WHERE nom = "anna" or cognom = "rovira" group by nom;
+
+SELECT COUNT(*) nom FROM dades_ponent WHERE nom = "anna" or cognom = "rovira" group by nom order by count(*) ASC;
