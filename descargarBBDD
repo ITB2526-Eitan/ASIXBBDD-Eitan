@@ -1,0 +1,7 @@
+docker pull mysql:8.0.45-debian
+
+sudo docker run --name eitan -p3307:3306 -e MYSQL_ROOT_PASSWORD=itb2025 -d mysql:latest
+
+sudo docker pull phpmyadmin
+
+sudo docker run --name phpmyadmin -d --link eitan:db -p 8080:80 phpmyadmin
