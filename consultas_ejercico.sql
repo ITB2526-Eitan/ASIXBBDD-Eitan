@@ -7,7 +7,17 @@ use tech_summit;
 
 -- 1. Volem fer etiquetes per les portes dels espais on es faran les conferències amb els noms dels ponents.
 -- Fes una consulta per obtenir el nom de tots els ponents en majúscules.
--- 
+
+
+alter table dades_ponent ADD COLUMN ordinadors int check (ordinadors >= 0 AND ordinadors <= 4);
+alter table dades_ponent ADD COLUMN rate int check (rate BETWEEN 5 AND 10);
+UPDATE dades_ponent
+SET 
+    ordinadors = FLOOR(1 + RAND() * 4),   -- valores entre 1 y 4
+    rate = FLOOR(5 + RAND() * 6);
+SELECT * FROM dades_ponent;
+
+
 
 SELECT upper(nom) from dades_ponent; 
 
@@ -68,10 +78,12 @@ SELECT nom, cognom, floor(rand() * 2) FROM dades_ponent;
 -- Fes una consulta, on li assignis a cada ponent un número de loteria sencer entre 1 i 100 i mostra'l a una columna anomenada Numero_Sorteig'.
 -- Per fer les consultes 13, 14, i 15, has d'afegir un nou camp complex_rate, on no fagis l'arodoniment
 
-
+SELECT nom, cognom, floor(rand() * 101) as Numero_Sorteig from dades_ponent;
 
 -- * 13. La direcció vol veure els nivells dels ponents (complex_rate) sense complicacions de decimals per simplificar l'informe.
 -- Mostra un llistat amb el nom del ponent i el seu 'complex_rate' truncat a 0 decimals, però només per a aquells que tinguin un 'rate' superior a 7.
+
+
 
 -- * 14. Per a un informe estadístic que anirà a premsa, necessitem arrodonir les puntuacions al sencer més proper.
 -- Selecciona el nom, l'empresa i el 'complex_rate' arrodonit (ROUND), ordenant els resultats de major a menor puntuació segons aquest arrodoniment.

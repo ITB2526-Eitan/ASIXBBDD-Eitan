@@ -15,6 +15,8 @@ CREATE TABLE dades_ponent (
     empresa VARCHAR(100)
 );
 
+
+
 -- 2. Taula de sessions o xerrades
 CREATE TABLE sessio (
     id INT AUTO_INCREMENT PRIMARY KEY,
