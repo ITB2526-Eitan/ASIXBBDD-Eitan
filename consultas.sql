@@ -25,3 +25,11 @@ SELECT nom,cognom,empresa FROM dades_ponent WHERE nom = "anna" or cognom = "rovi
 SELECT COUNT(*) nom FROM dades_ponent WHERE nom = "anna" or cognom = "rovira" group by nom;
 
 SELECT COUNT(*) nom FROM dades_ponent WHERE nom = "anna" or cognom = "rovira" group by nom order by count(*) ASC;
+
+SELECT * from dades_ponent;
+
+SELECT concat(nom, ' ', cognom) from dades_ponent;
+
+SELECT substring(nom,1,3) from dades_ponent;
+
+SELECT CURRENT_DATE;
