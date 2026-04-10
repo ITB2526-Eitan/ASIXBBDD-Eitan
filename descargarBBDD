@@ -5,3 +5,12 @@ sudo docker run --name eitan -p3307:3306 -e MYSQL_ROOT_PASSWORD=itb2025 -d mysql
 sudo docker pull phpmyadmin
 
 sudo docker run --name phpmyadmin -d --link eitan:db -p 8080:80 phpmyadmin
+
+
+
+git add .
+
+git add nombre_archivo
+
+
+git commit -m "Descripción clara de los cambios".

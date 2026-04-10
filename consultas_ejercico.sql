@@ -11,10 +11,15 @@ use tech_summit;
 
 alter table dades_ponent ADD COLUMN ordinadors int check (ordinadors >= 0 AND ordinadors <= 4);
 alter table dades_ponent ADD COLUMN rate int check (rate BETWEEN 5 AND 10);
-UPDATE dades_ponent
-SET 
-    ordinadors = FLOOR(1 + RAND() * 4),   -- valores entre 1 y 4
-    rate = FLOOR(5 + RAND() * 6);
+alter table dades_ponent ADD COLUMN complex_rate float;
+
+update dades_ponent set complex_rate = rand() * 11;
+
+update dades_ponent
+    SET 
+    ordinadors = FLOOR(1 + RAND(id) * 4),   -- valores entre 1 y 4
+    rate = FLOOR(5 + RAND(id) * 6),
+    complex_rate = (5 + RAND(id) * 6);
 SELECT * FROM dades_ponent;
 
 
@@ -83,103 +88,182 @@ SELECT nom, cognom, floor(rand() * 101) as Numero_Sorteig from dades_ponent;
 -- * 13. La direcció vol veure els nivells dels ponents (complex_rate) sense complicacions de decimals per simplificar l'informe.
 -- Mostra un llistat amb el nom del ponent i el seu 'complex_rate' truncat a 0 decimals, però només per a aquells que tinguin un 'rate' superior a 7.
 
+SELECT nom, TRUNCATE(complex_rate, 0) from dades_ponent where rate > 7;
 
 
 -- * 14. Per a un informe estadístic que anirà a premsa, necessitem arrodonir les puntuacions al sencer més proper.
 -- Selecciona el nom, l'empresa i el 'complex_rate' arrodonit (ROUND), ordenant els resultats de major a menor puntuació segons aquest arrodoniment.
 
+SELECT nom, empresa, round(complex_rate) FROM dades_ponent ORDER BY round(complex_rate) DESC;
+
 -- * 15. L'organització ha decidit ser generosa i pujar la categoria dels ponents al següent nivell sencer.
 -- Obté el nom i el 'rate' arrodonit sempre a l'alça (CEILING) per a tots els ponents, excepte els que treballen a 'innovate asix'.
 
+SELECT nom, CEILING(rate) FROM dades_ponent WHERE empresa <> 'innovate asix';
+
 -- 16. El departament de comptabilitat vol aplicar la política de "mínims de qualitat" en les valoracions internes.
 -- Mostra el 'complex_rate' arrodonit sempre a la baixa (FLOOR) i el nom, filtrant només els ponents amb ID parell que tinguin un 'complexrate' superior a 6.
+
+SELECT floor(complex_rate), nom from dades_ponent where mod(id,2)=0 and complex_rate > 6; 
 
 -- 17. S'ha detectat un error en l'entrada de dades manual i algunes puntuacions de 'rate' podrien haver-se gravat amb signe negatiu.
 -- Fes una consulta que retorni el valor absolut del 'rate' i el nom del ponent per assegurar que totes les dades del llistat siguin positives.
 -- Afegeix els registres amb aquest error per a provar la consulta.
 
+SELECT CEILING(rate), nom from dades_ponent;
+
 -- 18. Necessitem calcular la potència de càlcul teòrica disponible segons els equips (ordenadores) que aporta cada ponent.
 -- Obté un llistat amb el nom i el resultat d'elevar 2 al nombre d'ordinadors, posant l'àlies 'Capacitat_Calcul' a la columna resultant.
+
+SELECT nom, power(2, ordinadors) as Capacitat_Calcul FROM dades_ponent;
 
 -- 19. Volem dividir els ponents en dos grups de treball segons si el seu identificador a la base de dades és parell o senar.
 -- Fes un llistat que obtingui el nom del ponent i el residu de dividir l'ID per 2, ordenant el llistat final per aquest residu.
 
+SELECT nom, id & 2 as residu from dades_ponent ORDER BY residu;
+-- SELECT nom, id & 2 as residu from dades_ponent ORDER BY id % 2;
+
+
+
 -- 20. El departament de qualitat necessita conèixer la ràtio de "puntuació per equip" de cada expert del congrés.
 -- Divideix el 'rate' pel nombre d'ordinadors, arrodoneix el resultat a 2 decimals i mostra el nom del ponent en la mateixa fila, per a tots els ponents.
+
+SELECT truncate(rate/ordinadors, 2), nom from dades_ponent;
 
 -- 21. La gerència vol saber la dimensió total del cos de ponents que participen en el Tech Summit d'enguany.
 -- Fes una consulta que compti quants ponents hi ha registrats en total a la taula de dades.
 
+SELECT count(*) from dades_ponent;
+
 -- 22. L'equip de logística necessita saber quants endolls i ordinadors s'han de gestionar en total a les sales.
 -- Calcula la suma de la columna 'ordinadors' per a tots els ponents de la base de dades, móstra el resultat amb l'àlies 'endolls'.
+
+SELECT SUM(ordinadors) as endolls from dades_ponent;
 
 -- 23. Per avaluar el nivell general de l'esdeveniment, volem saber la qualitat mitjana dels nostres ponents.
 -- Obté la mitjana de la puntuació 'rate' de tots els ponents i anomena la columna resultant com a 'Mitjana_Qualitat'.
 
+SELECT AVG(rate) as Mitjana_Qualitat from dades_ponent;
+
 -- 24. Volem fer una menció especial i felicitar el ponent que ha obtingut la millor valoració de tot l'esdeveniment.
 -- Troba quina és la puntuació 'rate' més alta registrada a la taula, sense importar de quin ponent es tracti.
+ 
+SELECT MAX(rate) from dades_ponent;
 
 -- 25. Per planificar el transport, volem saber quina és la càrrega mínima de material informàtic que porta un professor.
 -- Obté el nombre mínim d'ordinadors que porta un sol ponent d'entre tots els registres del llistat.
 
+SELECT MIN(ordinadors) from dades_ponent; 
+
 -- 26. El departament d'agenda vol confirmar el volum de continguts i xerrades que s'han preparat.
 -- Fes una consulta que compti quantes sessions o xerrades diferents hi ha programades a la taula de sessions.
+
+SELECT count(DISTINCT titol) from sessio;
 
 -- 27. L'empresa patrocinadora 'tech corp' vol saber exactament quants dels seus treballadors estan actius al congrés.
 -- Compta quants ponents pertanyen a l'empresa 'tech corp' fent servir una restricció de filtrat.
 
+SELECT count(*) from dades_ponent where empresa = 'tech corp';
+
 -- 28. Volem analitzar els recursos que aporten els ponents que s'han incorporat més tard al llistat (ID superior a 2).
 -- Calcula la suma total d'ordinadors que porten aquests ponents específics.
+
+SELECT sum(ordinadors) from dades_ponent where id > 2;
 
 -- 29. L'organització vol donar un premi als ponents d'elit, aquells que tenen un 'rate' excel·lent de 9 o 10.
 -- Calcula la mitjana d'ordinadors que porten exclusivament els ponents que compleixen aquesta condició de nivell.
 
+SELECT AVG(ordinadors) from dades_ponent where rate > 9;
+
 -- 30. L'equip de publicacions vol saber el volum de text total dels títols per calcular l'espai de la cartelleria.
 -- Obté la suma de la longitud de tots els títols de les sessions programades.
+
+SELECT sum(length(titol)) from sessio;
 
 -- 31. Necessitem un informe del volum de participació corporativa per saber quines empreses dominen l'esdeveniment.
 -- Agrupa els ponents per empresa i mostra el nom de l'empresa i quants ponents n'hi ha de cada una.
 
+SELECT empresa, count(*) from dades_ponent group by empresa;
+
 -- 32. Volem saber com es distribueixen els equips informàtics segons el nivell d'expertesa dels professors.
 -- Agrupa per cada nivell de 'rate' existent i calcula la suma total d'ordinadors per a cadascun d'aquests grups.
+
+SELECT rate, sum(ordinadors) from dades_ponent GROUP BY rate ORDER BY rate;
 
 -- 33. Hi ha sales que podrien estar massa saturades si tenen massa xerrades assignades.
 -- Obté el nom de les sales que tenen més d'una sessió programada utilitzant una restricció sobre l'agrupament.
 
+SELECT sala, count(*) from sessio GROUP BY sala HAVING count(*) > 1;
+
 -- 34. Volem analitzar si els experts tenen prou eines segons el seu nivell acadèmic.
 -- Agrupa els ponents pel seu 'rate', mostra la mitjana d'equips de cada grup i filtra només aquells on la mitjana superi 1.
 
+SELECT rate, avg(ordinadors) from dades_ponent GROUP BY rate HAVING avg(ordinadors) > 1;
+
 -- 35. L'equip de dades vol fer una estadística curiosa per saber si hi ha lletres més "populars" entre els ponents.
 -- Mostra la primera lletra del nom i quants ponents tenen aquesta inicial, agrupat per aquesta lletra i ordenat pel recompte.
+
+SELECT substring(nom, 1, 1) inicio, count(*) as ponents FROM dades_ponent GROUP BY inicio order by ponents;
 
 -- 36. Hi ha ponents que encara no han estat avaluats i la columna 'rate' té valors buits o desconeguts.
 -- Mostra un llistat amb el nom i el 'rate', però si el valor és NULL, mostra un 5 com a valor mínim de seguretat.
 -- Modifica les dades qeu calgui per provar aquesta consulta.
 
+update dades_ponent set rate = Null where id = 1;
+
+SELECT nom, IFNULL(rate, 5) as rate from dades_ponent;
+
+
+
 -- 37. Per a la llista pública de ponents a la web, no volem que ningú aparegui sense una empresa assignada.
 -- Obté el nom i cognom, i si un ponent no té empresa, mostra el text 'Freelance' en una columna anomenada 'Empresa_Publica'.
 -- Modifica les dades qeu calgui per provar aquesta consulta.
 
+update dades_ponent set empresa = NULL where id = 2;
+
+SELECT nom, cognom, COALESCE(empresa, 'Freelance') AS Empresa_Publica FROM dades_ponent;
+
+
 -- 38. Volem automatitzar la classificació visual dels ponents segons la seva valoració en el panell de control.
 -- Crea un llistat amb una columna 'Estatus' que mostri 'Expert' si el rate és igual o superior a 9 i 'Standard' en cas contrari.
+
+SELECT nom, rate, IF(rate >= 9, 'Expert', 'standard') as Estatus from dades_ponent;
 
 -- 39. Logística vol saber quines sales necessiten reforç de personal de protocol segons la seva importància.
 -- Fes un llistat que mostri, per a cada sessió,  el títol de la sessió i posa 'Sala_Principal' si la xerrada és a la 'sala a' o 'Sala_Secundaria' si és a qualsevol altra.
 
+SELECT titol, If(sala = 'sala a', 'Sala_Principal', 'Sala_Secundaria') as Sala from sessio;
+
 -- 40. El departament de recursos humans vol una escala de rangs molt més clara per classificar els perfils.
 -- Fes un llistat que mostri a cada registre el nom i l'empresa, i usa una estructura condicional per mostrar: de 5-6 'Junior', de 7-8 'Senior', i de 9-10 'Master'.
+
+SELECT nom, empresa, 
+case 
+    when rate BETWEEN 5 and 6 then 'junior'
+    when rate BETWEEN 7 and 8 then 'senior' 
+    when rate BETWEEN 9 and 10 then 'master' 
+END 
+from dades_ponent;   
 
 -- 41. El sistema de seguretat necessita imprimir en cada informe el dia exacte en què s'ha consultat la base de dades.
 -- Fes una consulta que mostri la data actual del servidor amb l'àlies 'Data_Consulta'.
 
+SELECT CURRENT_DATE() as data_consulta;
+
 -- 42. Per al registre de logs de l'aplicació mòbil del congrés, necessitem el segell de temps complet.
 -- Obté  la data i l'hora exacta del sistema (NOW) en una columna anomenada 'Timestamp_Execucio'.
+
+SELECT NOW() as Timestamp_Execucio;
 
 -- 43. Volem saber quant de temps de marge tenim des que va començar l'any del congrés per tancar els comptes.
 -- Calcula quants dies han passat des de l'1 de gener de 2026 fins al dia d'avui.
 
+SELECT DATEDIFF(CURRENT_DATE(), '2026-01-01');
+
 -- 44. El servei de neteja només necessita saber a quina hora en punt comencen les sessions per organitzar els torns.
 -- Fes un llistat que mostri a cada registre mostri el títol de la sessió i només el valor de l'hora d'inici (sense minuts), ordenat cronològicament.
+
+SELECT titol, HOUR() from sessio;
 
 -- 45. L'equip del catering vol organitzar els torns de l'esmorzar i del dinar segons l'horari de les xerrades.
 -- Fes un llistat que mostri a cada registre mostri el títol de la sessió i posa 'Torn_1' si l'hora és anterior a les 11:30:00, o 'Torn_2' si és posterior.
@@ -204,6 +288,9 @@ SELECT nom, cognom, floor(rand() * 101) as Numero_Sorteig from dades_ponent;
 
 -- 52. Per exportar els llistats a un sistema de correu antic, necessitem un format de text pla molt senzill.
 -- Concatena el nom, el cognom i l'empresa separats per barres verticals ('|') i posa l'àlies 'Registre_Exportacio'.
+
+
+
 
 -- 53. Els títols de les sessions a la web del congrés han de seguir un format de codi d'URL sense espais.
 -- Mostra el títol en majúscules i canvia tots els espais per guions baixos ('_'), filtrant només les sessions de la 'sala b'.
