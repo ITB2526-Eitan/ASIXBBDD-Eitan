@@ -11,7 +11,7 @@
             "port": 3307,
             "driver": "MySQL",
             "name": "Eitaaaan",
-            "database": "Eitan",
+            "database": "mysql",
             "username": "root",
             "password": "itb2025"
         }
