@@ -14,6 +14,20 @@
             "database": "mysql",
             "username": "root",
             "password": "itb2025"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "32.192.211.75",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "proveedores",
+            "database": "GestionProveedores",
+            "username": "remoto_user"
         }
     ]
 }
