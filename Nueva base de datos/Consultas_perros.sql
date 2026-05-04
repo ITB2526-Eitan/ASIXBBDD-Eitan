@@ -203,17 +203,19 @@ ORDER BY empleat.salari;
 
 --4\. Quin departament té més empleats? Mostra el nom del departament i el nombre d'empleats.
 
-SELECT departament.nom, count(empleat.id)
-from departament
-join empleat on departament.id = empleat.id_departament;
+SELECT departament.nom, count(empleat.id) as empleados
+from empleat
+join departament on departament.id = empleat.id_departament
+GROUP BY departament.id;
 
 
 --5\. Mostra els empleats contractats l'any 2023 o posterior, amb el nom del seu departament i la seva ubicacio.
---
---
---
---
---
+
+SELECT empleat.nom, departament.nom, departament.ubicacio
+from empleat
+join departament on departament.id = empleat.id_departament
+where empleat.data_alta > "2023-01-01";
+
 --\=====================================================================
 --
 --PAR 3 - categoria i producte  (RIGHT JOIN)
@@ -249,30 +251,46 @@ join empleat on departament.id = empleat.id_departament;
 --1\. Llista tots els productes amb el nom de la seva categoria. Inclou els productes que no tenen categoria assignada (han d'apareixer amb NULL).
 --
 --   -> Tipus de JOIN: RIGHT JOIN (producte a la dreta)   (<- TOTES les files de la dreta + NULL on no hi ha coincidència a l'esquerra)
---
---
---
+
+SELECT producte.nom, categoria.nom
+from producte
+RIGHT JOIN categoria on categoria.id = producte.id_categoria;
+
+
+
 --2\. Quantes categories no tenen cap producte assignat? Llista-les.
---
---
---
---
+
+
+SELECT categoria.nom, producte.id
+from categoria
+RIGHT JOIN producte on categoria.id = producte.id_categoria
+where producte.id is null;
+
+
 --3\. Mostra el nom de cada categoria i quants productes té, incloent les categories sense productes (amb 0).
---
---
---
---
+
+SELECT categoria.nom, Count(producte.id)
+from categoria
+RIGHT JOIN producte on categoria.id = producte.id_categoria
+GROUP BY categoria.id;
+
+
 --4\. Llista els productes sense categoria que tinguin un preu superior a 50 euros.
---
---
---
---
+
+SELECT producte.nom, producte.preu, categoria.nom
+from categoria
+RIGHT JOIN producte on categoria.id = producte.id_categoria
+where categoria.id is null and producte.preu > 50;
+
+
 --5\. Quines categories actives no tenen cap producte en estoc?
---
---
---
---
---
+
+SELECT categoria.nom, producte.nom
+from categoria
+RIGHT JOIN producte on categoria.id = producte.id_categoria
+where categoria.activa is not NULL and producte.estoc is null;
+
+
 --\=====================================================================
 --
 --PAR 4 - ciutat, client i comanda  (LEFT OUTER JOIN)
@@ -299,7 +317,8 @@ join empleat on departament.id = empleat.id_departament;
 --
 --client(id, nom, cognom, email, telefon, id_ciutat)  -- FK a ciutat
 --
---comanda(id, data_comanda, total, estat, adreca_enviament, id_client, id_ciutat_enviament)  -- id_client NOT NULL, id_ciutat_enviament FK a ciutat
+--comanda(id, data_comanda, total, estat, adreca_enviament, id_client, id_ciutat_enviament)  
+-- id_client NOT NULL, id_ciutat_enviament FK a ciutat
 --
 --
 --
@@ -307,27 +326,44 @@ join empleat on departament.id = empleat.id_departament;
 --
 --\---------
 --
---1\. Llista tots els clients amb les seves comandes. Els clients sense cap comanda han d'apareixer igualment (amb NULL a les columnes de comanda).
+--1\. Llista tots els clients amb les seves comandes. Els clients sense cap comanda han d'apareixer 
+--igualment (amb NULL a les columnes de comanda).
 --
 --   -> Tipus de JOIN: LEFT OUTER JOIN   (<- idèntic a LEFT JOIN; OUTER és opcional i no canvia res)
---
---
---
+
+SELECT client.nom, comanda.total, comanda.adreca_enviament
+from client
+LEFT OUTER JOIN comanda on client.id = comanda.id_client;
+
+
 --2\. Quins clients NO han fet mai cap comanda? Mostra el seu nom, cognom i correu electronic.
---
---
---
---
---3\. Mostra el total gastat per cada client (suma de totes les seves comandes), incloent els clients que no han gastat res (0 o NULL).
---
---
---
---
---4\. Quants clients de Barcelona han fet almenys una comanda? (Necessites JOIN amb la taula ciutat per obtenir el nom de la ciutat.)
---
---
---
---
+
+SELECT client.nom, client.cognom, client.email
+from client
+LEFT OUTER JOIN comanda on client.id = comanda.id_client
+where comanda.id is null;
+
+
+--3\. Mostra el total gastat per cada client (suma de totes les seves comandes), 
+-- incloent els clients que no han gastat res (0 o NULL).
+
+SELECT client.nom, sum(comanda.total)
+from client
+LEFT OUTER JOIN comanda on client.id = comanda.id_client
+GROUP BY client.id;
+
+
+
+--4\. Quants clients de Barcelona han fet almenys una comanda? 
+--(Necessites JOIN amb la taula ciutat per obtenir el nom de la ciutat.)
+
+SELECT client.nom, ciutat.nom
+from client
+LEFT OUTER JOIN comanda on client.id = comanda.id_client
+LEFT OUTER JOIN ciutat on ciutat.id = comanda.id_ciutat_enviament
+WHERE ciutat.nom = 'Barcelona';
+
+
 --5\. Llista els clients que han fet comandes amb estat "cancel·lat", mostrant el nom del client i la data de la comanda.
 --
 --
