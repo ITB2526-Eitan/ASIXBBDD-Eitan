@@ -28,6 +28,20 @@
             "name": "proveedores",
             "database": "GestionProveedores",
             "username": "remoto_user"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "ec2-18-234-213-208.compute-1.amazonaws.com",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "Examen_EItan",
+            "database": "GestionProveedores",
+            "username": "eitan"
         }
     ]
 }

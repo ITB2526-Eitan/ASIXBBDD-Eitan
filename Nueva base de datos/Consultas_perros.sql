@@ -364,11 +364,14 @@ LEFT OUTER JOIN ciutat on ciutat.id = comanda.id_ciutat_enviament
 WHERE ciutat.nom = 'Barcelona';
 
 
---5\. Llista els clients que han fet comandes amb estat "cancel·lat", mostrant el nom del client i la data de la comanda.
---
---
---
---
+--5\. Llista els clients que han fet comandes amb estat "cancel·lat", mostrant el nom del client 
+--i la data de la comanda.
+
+SELECT client.nom, comanda.data_comanda, comanda.estat
+from client
+LEFT OUTER JOIN comanda on client.id = comanda.id_client
+WHERE comanda.estat = 'cancel·lat';
+
 --6\. Llista tots els clients amb el nom de la seva ciutat de residència. Inclou els clients sense ciutat assignada (NULL).
 --
 --
