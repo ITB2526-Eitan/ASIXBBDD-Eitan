@@ -60,7 +60,11 @@ USE tech_summit;
 
 -- Escriu aquí la teva consulta SQL:
 
-
+SELECT CONCAT(UPPER(SUBSTRING(cognom, 1, 3)), LPAD(id, 4, '0')) as codi_ponent,
+CONCAT(UPPER(cognom), ', ', CONCAT(UCASE(LEFT(nom, 1)), LCASE(SUBSTRING(nom, 2)))) as nom_complet,
+empresa
+from dades_ponent
+ORDER BY cognom;
 
 -- ------------------------------------------------------------
 -- Pregunta 2 [3 punts]
@@ -82,8 +86,14 @@ USE tech_summit;
 
 -- Escriu aquí la teva consulta SQL:
 
-
-
+SELECT nom, cognom, round(rate), trunc(complex_rate, 1) as complex_rate_trunc,
+CEILING(rate) - FLOOR(complex_rate) as diferencia,
+CASE
+    WHEN ordinadors % 2 = 0 THEN 'Parell'
+    ELSE 'Senar'
+END as paritat
+from dades_ponent
+WHERE complex_rate > 0;
 
 -- ------------------------------------------------------------
 -- Pregunta 4 [3 punts]
@@ -109,6 +119,19 @@ USE tech_summit;
 
 -- Escriu aquí la teva consulta SQL:
 
+SELECT CONCAT(nom, ' ', cognom) as nom_complet, rate,
+CASE
+    WHEN rate >= 9 THEN 'Expert'
+    WHEN rate >= 7 THEN 'Avançat'
+    ELSE 'Intermedi'
+END as categoria,
+CASE
+    WHEN ordinadors >= 3 THEN 'Molt equipat'
+    WHEN ordinadors >= 1 THEN 'Equipat'
+    ELSE 'Sense equip'
+END as equipament
+from dades_ponent
+ORDER BY categoria, rate desc;
 
 -- ------------------------------------------------------------
 -- Pregunta 5 [3 punts]
@@ -127,10 +150,10 @@ USE tech_summit;
 
 -- Escriu aquí la teva consulta SQL:
 
-SELECT dades_ponent.empresa, count(dades_ponent.id) as total, avg(dades_ponent.rate), max(dades_ponent.rate), min(dades_ponent.rate)
+SELECT dades_ponent.empresa, count(dades_ponent.id) as total_ponents, round(avg(dades_ponent.rate), 2) as media_rate, max(dades_ponent.rate) as max_rate, min(dades_ponent.rate) as min_rate
 from dades_ponent
-GROUP BY dades_ponent.id
-ORDER BY total and dades_ponent.empresa;
+GROUP BY dades_ponent.empresa
+ORDER BY total_ponents desc, dades_ponent.empresa asc;
 
 -- ------------------------------------------------------------
 -- Pregunta 6 [3 punts]
@@ -200,6 +223,7 @@ ORDER BY media desc;
 
 -- Escriu aquí la teva consulta SQL:
 
+
 select dades_ponent.empresa, count(dades_ponent.id), concat(dades_ponent.nom, '|', dades_ponent.cognom) as llista_ponents
 from dades_ponent
 GROUP BY dades_ponent.id
@@ -230,8 +254,16 @@ ORDER BY dades_ponent.empresa;
 
 -- Escriu aquí la teva consulta SQL:
 
-
-
+SELECT dades_ponent.empresa, count(dades_ponent.id) as total, sum(dades_ponent.ordinadors) as total_ordinadors, trunc(avg(dades_ponent.complex_rate), 1) as media_complex_rate,
+CASE
+    WHEN total > 2 and max(dades_ponent.rate) >= 9 THEN 'Premium'
+    WHEN min(dades_ponent.rate) < 6 THEN 'Risc'
+    ELSE 'Estàndard'
+END as classificacio
+from dades_ponent
+GROUP BY dades_ponent.empresa
+HAVING total >= 2 and total_ordinadors > 3
+ORDER BY total desc, media_complex_rate desc;
 
 -- ============================================================
 -- SECCIÓ 2 — PREGUNTES TEÒRIQUES I CONCEPTUALS
